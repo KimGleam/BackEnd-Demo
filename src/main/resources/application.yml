@@ -11,6 +11,33 @@
 #      ddl-auto: none
 #    show-sql: true
 
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+  h2:
+    console:
+      enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 595510502221-38jib7lkar5digis4oath7kr6dlglp9v.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+jwt:
+  issuer: valvakim@gmail.com
+  secret_key: study-springboot
+
 swagger:
   url: http://localhost:8080 # /swagger-ui/index.html
   description: Local Server URL

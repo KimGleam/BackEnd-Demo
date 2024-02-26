@@ -1,5 +1,6 @@
-package com.example.demo.biz.member.controller;
+package com.example.demo.biz.user.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,9 +12,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * com.example.demo.biz.member.controller.MemberController
+ * com.example.demo.biz.member.controller.UserController
  * <p>
- * MemberController
+ * UserController
  *
  * @author 김태욱
  * @version 1.0
@@ -30,16 +31,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @OpenAPIDefinition(
 	info = @Info(
-		title = "Member API",
+		title = "User API",
 		version = "1.0",
-		description = "Member API"
+		description = "User API"
 	)
 )
-@Tag(name = "Member API", description = "Member API Controller")
+@Tag(name = "User API", description = "User API Controller")
 @Slf4j
 @RestController
-@RequestMapping("/member")
-public class MemberController {
+@RequestMapping("/user")
+public class UserController {
 
 	/**
 	 *
@@ -48,7 +49,7 @@ public class MemberController {
 	@Operation(summary = "회원 정보", description = "회원 정보")
 	@GetMapping("/info")
 	public String test(){
-		return "member Name";
+		return "User Name";
 	}
 
 }
