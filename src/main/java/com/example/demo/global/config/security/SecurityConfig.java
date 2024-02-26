@@ -40,6 +40,22 @@ public class SecurityConfig {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final UserService userService;
 
+	private static final String[] whiteList = new String[] {
+		"/actuator/**",
+		"/demo/**",
+		// Swagger 관련
+		"/v3/api-docs",
+		"/configuration/ui",
+		"/swagger-resources/**",
+		"/configuration/security",
+		"/swagger-ui.html",
+		"/swagger-ui/**",
+		"/webjars/**",
+		"/v3/**",
+		// API 인증
+		"/api/token"
+	};
+
 	@Bean
 	public WebSecurityCustomizer configure() {
 		return (web) -> web.ignoring()
@@ -68,7 +84,7 @@ public class SecurityConfig {
 			.logoutSuccessUrl("/login");
 
 		http.authorizeRequests()
-			.requestMatchers("/api/token").permitAll()	// 해당 URI 인증 필요 X
+			.requestMatchers(whiteList).permitAll()	// 해당 URI 인증 필요 X
 			.anyRequest().authenticated();	// 다른 URI 인증 필요
 
 		http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);	// Rest API 요청시 인증 실행
