@@ -11,9 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * com.shop.doubleu.member.controller.UserController
+ * com.shop.doubleu.member.controller.MemberController
  * <p>
- * UserController
+ * MemberController
  *
  * @author 김태욱
  * @version 1.0
@@ -39,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class MemberController {
 
 	/**
 	 *

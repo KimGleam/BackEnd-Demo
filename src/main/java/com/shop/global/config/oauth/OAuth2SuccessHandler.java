@@ -12,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.shop.doubleu.member.entity.Member;
 import com.shop.doubleu.common.model.entity.RefreshToken;
 import com.shop.doubleu.common.repository.RefreshTokenRepository;
-import com.shop.doubleu.member.service.UserService;
+import com.shop.doubleu.member.service.MemberService;
 import com.shop.global.config.jwt.TokenProvider;
 import com.shop.global.util.CookieUtil;
 
@@ -33,12 +33,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
-    private final UserService userService;
+    private final MemberService memberService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Member member = userService.findByEmail((String) oAuth2User.getAttributes().get("email"));
+        Member member = memberService.findByEmail((String) oAuth2User.getAttributes().get("email"));
 
         String refreshToken = tokenProvider.generateToken(member, REFRESH_TOKEN_DURATION);
         saveRefreshToken(member.getMemberId(), refreshToken);

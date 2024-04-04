@@ -26,7 +26,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.shop.doubleu.common.model.ErrorMessage;
 import com.shop.doubleu.common.repository.RefreshTokenRepository;
-import com.shop.doubleu.member.service.UserService;
+import com.shop.doubleu.member.service.MemberService;
 import com.shop.global.config.jwt.TokenProvider;
 import com.shop.global.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.shop.global.config.oauth.OAuth2SuccessHandler;
@@ -45,7 +45,7 @@ public class SecurityConfig {
 	private final OAuth2UserCustomService oAuth2UserCustomService;
 	private final TokenProvider tokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
-	private final UserService userService;
+	private final MemberService memberService;
 
 	private static final String[] whiteList = new String[] {
 		"/actuator/**",
@@ -112,7 +112,7 @@ public class SecurityConfig {
 		return new OAuth2SuccessHandler(tokenProvider,
 			refreshTokenRepository,
 			oAuth2AuthorizationRequestBasedOnCookieRepository(),
-			userService
+			memberService
 		);
 	}
 

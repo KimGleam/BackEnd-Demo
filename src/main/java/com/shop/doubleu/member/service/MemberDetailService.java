@@ -1,6 +1,5 @@
 package com.shop.doubleu.member.service;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import com.shop.doubleu.member.entity.Member;
@@ -10,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class UserDetailService {
+public class MemberDetailService {
 
     private final MemberRepository memberRepository;
 
