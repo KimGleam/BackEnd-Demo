@@ -36,6 +36,9 @@ dependencies {
 
     implementation 'org.hibernate.validator:hibernate-validator:7.0.2.Final'
 
+    // DB
+    implementation 'mysql:mysql-connector-java'
+
     // JWT
     implementation 'com.auth0:java-jwt:4.2.1'
 
