@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.shop.doubleu.product.entity.Product;
 import com.shop.doubleu.product.service.ProductService;
+import com.shop.global.support.SuccessResponse;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,8 +58,8 @@ public class ProductController {
 	 */
 	@Operation(summary = "상품 목록", description = "상품 목록 조회")
 	@GetMapping("/list")
-	public List<Product> getProductList(@RequestHeader String productId){
-		return productService.getProductList(productId);
+	public SuccessResponse getProductList(@RequestHeader String productId){
+		return new SuccessResponse(productService.getProductList(productId));
 	}
 
 }

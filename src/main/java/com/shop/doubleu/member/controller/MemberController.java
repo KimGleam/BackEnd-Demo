@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shop.doubleu.member.service.MemberService;
+import com.shop.global.support.SuccessResponse;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,8 +54,8 @@ public class MemberController {
 	 */
 	@Operation(summary = "회원 정보", description = "회원 정보")
 	@GetMapping("/info")
-	public String getMemberInfo(){
-		return "Member Name";
+	public SuccessResponse getMemberInfo(){
+		return new SuccessResponse("Member Name");
 	}
 
 }

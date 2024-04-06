@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FailResponse {
 	@Schema(description = "결과코드", type = "String")
-	private String resultCode;
+	private int resultCode;
 	@Schema(description = "결과메세지", type = "String")
 	private String resultMessage;
 }

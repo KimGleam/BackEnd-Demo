@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.shop.doubleu.order.entity.Orders;
 import com.shop.doubleu.order.response.OrderList;
 import com.shop.doubleu.order.service.OrdersService;
+import com.shop.global.support.SuccessResponse;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,14 +53,10 @@ public class OrdersController {
 
 	private final OrdersService ordersService;
 
-	/**
-	 *
-	 * @return
-	 */
 	@Operation(summary = "주문 목록", description = "주문 목록 조회")
 	@GetMapping("/list")
-	public List<OrderList> getOrderList(@RequestHeader Long memberId){
-		return ordersService.getOrderList(memberId);
+	public SuccessResponse getOrderList(@RequestHeader Long memberId){
+		return new SuccessResponse(ordersService.getOrderList(memberId));
 	}
 
 }
