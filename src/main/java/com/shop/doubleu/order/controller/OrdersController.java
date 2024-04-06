@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shop.doubleu.order.entity.Orders;
+import com.shop.doubleu.order.response.OrderList;
 import com.shop.doubleu.order.service.OrdersService;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -57,7 +58,7 @@ public class OrdersController {
 	 */
 	@Operation(summary = "주문 목록", description = "주문 목록 조회")
 	@GetMapping("/list")
-	public List<Orders> getOrderList(@RequestHeader Long memberId){
+	public List<OrderList> getOrderList(@RequestHeader Long memberId){
 		return ordersService.getOrderList(memberId);
 	}
 

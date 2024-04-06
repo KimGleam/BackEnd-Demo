@@ -38,10 +38,10 @@ public class OrderList {
 
 	@JsonProperty
 	@Schema(description = "주문 수량", example = "3")
-	String orderCount;
+	int orderCount;
 
 	@JsonProperty
 	@Schema(description = "주문 가격", example = "600000")
-	String orderPrice;
+	int orderPrice;
 
 }

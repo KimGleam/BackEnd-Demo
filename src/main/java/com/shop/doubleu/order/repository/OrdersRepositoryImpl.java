@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.shop.doubleu.order.entity.Orders;
+import com.shop.doubleu.order.entity.OrderDetail;
+import com.shop.doubleu.order.entity.QOrderDetail;
 import com.shop.doubleu.order.entity.QOrders;
 
 import lombok.RequiredArgsConstructor;
@@ -35,11 +36,14 @@ public class OrdersRepositoryImpl implements OrdersRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	QOrders qOrders = QOrders.orders;
+	QOrderDetail qOrderDetail = QOrderDetail.orderDetail;
 
 	@Override
-	public List<Orders> getOrderList(Long memberId) {
+	public List<OrderDetail> getOrderList(Long memberId) {
 		return queryFactory
-			.selectFrom(qOrders)
+			.select(qOrderDetail)
+			.from(qOrders).leftJoin(qOrderDetail)
+				.on(qOrders.id.eq(qOrderDetail.orders.id))
 			.where(qOrders.member.id.eq(memberId))
 			.fetch();
 	}
