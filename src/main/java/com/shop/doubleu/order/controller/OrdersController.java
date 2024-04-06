@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shop.doubleu.order.entity.Order;
-import com.shop.doubleu.order.service.OrderService;
+import com.shop.doubleu.order.entity.Orders;
+import com.shop.doubleu.order.service.OrdersService;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,9 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * com.shop.doubleu.order.controller.OrderController
+ * com.shop.doubleu.order.controller.OrdersController
  * <p>
- * OrderController
+ * OrdersController
  *
  * @author 김태욱
  * @version 1.0
@@ -47,9 +47,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/order")
-public class OrderController {
+public class OrdersController {
 
-	private final OrderService orderService;
+	private final OrdersService ordersService;
 
 	/**
 	 *
@@ -57,8 +57,8 @@ public class OrderController {
 	 */
 	@Operation(summary = "주문 목록", description = "주문 목록 조회")
 	@GetMapping("/list")
-	public List<Order> getOrderList(@RequestHeader String memberId){
-		return orderService.getOrderList(memberId);
+	public List<Orders> getOrderList(@RequestHeader Long memberId){
+		return ordersService.getOrderList(memberId);
 	}
 
 }

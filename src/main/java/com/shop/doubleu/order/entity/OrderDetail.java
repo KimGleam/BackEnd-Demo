@@ -26,7 +26,7 @@ public class OrderDetail {
 
     @ManyToOne
     @JoinColumn(name="ORDER_ID")
-    private Order order;
+    private Orders orders;
 
     @Column(name = "PRODUCT_NAME")
     private String productName;
@@ -38,9 +38,9 @@ public class OrderDetail {
     private int orderCount;
 
     @Builder
-    public OrderDetail(Long id, Order order, String productName, int productPrice, int orderCount) {
+    public OrderDetail(Long id, Orders orders, String productName, int productPrice, int orderCount) {
         this.id = id;
-        this.order = order;
+        this.orders = orders;
         this.productName = productName;
         this.productPrice = productPrice;
         this.orderCount = orderCount;
