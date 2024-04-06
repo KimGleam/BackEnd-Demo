@@ -20,7 +20,7 @@ public class MemberService {
 
         return memberRepository.save(Member.builder()
                 .email(dto.getEmail())
-                .build()).getMemberId();
+                .build()).getId();
     }
 
     public Member findById(Long memberId) {

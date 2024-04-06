@@ -53,18 +53,26 @@ public class SwaggerConfig {
 		return new OpenAPI()
 				.info(info);
 	}
-	
-	@Bean
-	public GroupedOpenApi demo() {
-		String[] paths = {"/demo/**"};
-		return GroupedOpenApi.builder().group("demo").pathsToMatch(paths)
-							 .build();
-	}
+
 
 	@Bean
 	public GroupedOpenApi member() {
 		String[] paths = {"/member/**"};
 		return GroupedOpenApi.builder().group("member").pathsToMatch(paths)
+			.build();
+	}
+
+	@Bean
+	public GroupedOpenApi order() {
+		String[] paths = {"/order/**"};
+		return GroupedOpenApi.builder().group("order").pathsToMatch(paths)
+			.build();
+	}
+
+	@Bean
+	public GroupedOpenApi product() {
+		String[] paths = {"/product/**"};
+		return GroupedOpenApi.builder().group("product").pathsToMatch(paths)
 			.build();
 	}
 

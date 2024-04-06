@@ -60,7 +60,10 @@ public class SecurityConfig {
 		"/webjars/**",
 		"/v3/**",
 		// API 인증
-		"/api/token"
+		"/api/token",
+		"/member/**",
+		"/order/**",
+		"/product/**"
 	};
 
 	@Bean

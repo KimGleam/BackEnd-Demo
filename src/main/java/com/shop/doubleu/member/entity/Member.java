@@ -5,12 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
 
 @Table(name = "MEMBER")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,7 +15,7 @@ public class Member{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MEMBER_ID", nullable = false, unique = true)
-    private Long memberId;
+    private Long id;
 
     @Column(name = "EMAIL")
     private String email;
@@ -30,7 +24,8 @@ public class Member{
     private String nickname;
 
     @Builder
-    public Member(String email, String nickname) {
+    public Member(Long id, String email, String nickname) {
+        this.id = id;
         this.email = email;
         this.nickname = nickname;
     }

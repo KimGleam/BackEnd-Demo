@@ -41,7 +41,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Member member = memberService.findByEmail((String) oAuth2User.getAttributes().get("email"));
 
         String refreshToken = tokenProvider.generateToken(member, REFRESH_TOKEN_DURATION);
-        saveRefreshToken(member.getMemberId(), refreshToken);
+        saveRefreshToken(member.getId(), refreshToken);
         addRefreshTokenToCookie(request, response, refreshToken);
 
         String accessToken = tokenProvider.generateToken(member, ACCESS_TOKEN_DURATION);

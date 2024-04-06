@@ -1,10 +1,14 @@
-package com.shop.doubleu.member.controller;
+package com.shop.doubleu.order.controller;
+
+import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shop.doubleu.member.service.MemberService;
+import com.shop.doubleu.order.entity.Order;
+import com.shop.doubleu.order.service.OrderService;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,9 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * com.shop.doubleu.member.controller.MemberController
+ * com.shop.doubleu.order.controller.OrderController
  * <p>
- * MemberController
+ * OrderController
  *
  * @author 김태욱
  * @version 1.0
@@ -27,34 +31,34 @@ import lombok.extern.slf4j.Slf4j;
  *
  *     수정일        수정자           수정내용
  *  ----------    --------        ---------------------------
- *  2024/02/24    김태욱            최초 생성
+ *  2024/04/06    김태욱            최초 생성
  * </pre>
  */
 
 @OpenAPIDefinition(
 	info = @Info(
-		title = "Member API",
+		title = "ORDER API",
 		version = "1.0",
-		description = "Member API"
+		description = "ORDER API"
 	)
 )
-@Tag(name = "Member API", description = "Member API Controller")
+@Tag(name = "ORDER API", description = "ORDER API Controller")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/member")
-public class MemberController {
+@RequestMapping("/order")
+public class OrderController {
 
-	private final MemberService memberService;
+	private final OrderService orderService;
 
 	/**
 	 *
 	 * @return
 	 */
-	@Operation(summary = "회원 정보", description = "회원 정보")
-	@GetMapping("/info")
-	public String getMemberInfo(){
-		return "Member Name";
+	@Operation(summary = "주문 목록", description = "주문 목록 조회")
+	@GetMapping("/list")
+	public List<Order> getOrderList(@RequestHeader String memberId){
+		return orderService.getOrderList(memberId);
 	}
 
 }

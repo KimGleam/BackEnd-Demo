@@ -1,10 +1,14 @@
-package com.shop.doubleu.member.controller;
+package com.shop.doubleu.product.controller;
+
+import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shop.doubleu.member.service.MemberService;
+import com.shop.doubleu.product.entity.Product;
+import com.shop.doubleu.product.service.ProductService;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,9 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * com.shop.doubleu.member.controller.MemberController
+ * com.shop.doubleu.product.controller.ProductController
  * <p>
- * MemberController
+ * ProductController
  *
  * @author 김태욱
  * @version 1.0
@@ -27,34 +31,34 @@ import lombok.extern.slf4j.Slf4j;
  *
  *     수정일        수정자           수정내용
  *  ----------    --------        ---------------------------
- *  2024/02/24    김태욱            최초 생성
+ *  2024/04/06    김태욱            최초 생성
  * </pre>
  */
 
 @OpenAPIDefinition(
 	info = @Info(
-		title = "Member API",
+		title = "Product API",
 		version = "1.0",
-		description = "Member API"
+		description = "Product API"
 	)
 )
-@Tag(name = "Member API", description = "Member API Controller")
+@Tag(name = "Product API", description = "Product API Controller")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/member")
-public class MemberController {
+@RequestMapping("/product")
+public class ProductController {
 
-	private final MemberService memberService;
+	private final ProductService productService;
 
 	/**
 	 *
 	 * @return
 	 */
-	@Operation(summary = "회원 정보", description = "회원 정보")
-	@GetMapping("/info")
-	public String getMemberInfo(){
-		return "Member Name";
+	@Operation(summary = "상품 목록", description = "상품 목록 조회")
+	@GetMapping("/list")
+	public List<Product> getProductList(@RequestHeader String productId){
+		return productService.getProductList(productId);
 	}
 
 }
