@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/doubleu
     username: root
-    password: qwe1212
+    password: root99
   jpa:
     hibernate:
       ddl-auto: update
@@ -31,3 +31,11 @@ jwt:
 swagger:
   url: http://localhost:8080 # /swagger-ui/index.html
   description: Local Server URL
+
+product:
+  driver:
+      path: C:\\Users\\kwin\\IdeaProjects\\BackEnd-Demo\\src\\main\\resources\\chromedriver.exe
+  sample:
+      path:
+        C-01: https://www.kurly.com/categories/907001
+        B-01:
