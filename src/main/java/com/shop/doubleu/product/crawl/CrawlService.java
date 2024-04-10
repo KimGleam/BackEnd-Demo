@@ -80,8 +80,7 @@ public class CrawlService {
 
         // 가격 추출
         List<WebElement> priceElements = driver.findElements(By.cssSelector("#product-atf > section > h2"));
-        for (int i = 0; i < priceElements.size(); i++) {
-            WebElement priceElement = priceElements.get(i);
+        for (WebElement priceElement : priceElements) {
             String cssSelector = priceElement.findElement(By.tagName("span")).getAttribute("class");
 
             WebElement regularPriceElement = priceElement.findElement(By.cssSelector("span.css-9pf1ze.e1q8tigr2"));
@@ -119,29 +118,29 @@ public class CrawlService {
             }
 
             if (text.contains("배송")) {
-                log.debug("delivery info: {}", info.toString());
-                detailVo.setProductDeliveryInfo(info.toString());
+                log.debug("delivery info: {}", info);
+                detailVo.setProductDeliveryInfo(String.valueOf(info));
             } else if (text.contains("판매자")) {
-                log.debug("seller info: {}", info.toString());
-                detailVo.setProductSeller(info.toString());
+                log.debug("seller info: {}", info);
+                detailVo.setProductSeller(String.valueOf(info));
             } else if (text.contains("포장타입")) {
-                log.debug("packageType info: {}", info.toString());
-                detailVo.setProductPackageType(info.toString());
+                log.debug("packageType info: {}", info);
+                detailVo.setProductPackageType(String.valueOf(info));
             } else if (text.contains("판매단위")) {
-                detailVo.setSalesUnit(info.toString());
-                log.debug("salesUnit info: {}", info.toString());
+                detailVo.setSalesUnit(String.valueOf(info));
+                log.debug("salesUnit info: {}", info);
             } else if (text.contains("중량")) {
-                detailVo.setProductWeight(info.toString());
-                log.debug("weight info: {}", info.toString());
+                detailVo.setProductWeight(String.valueOf(info));
+                log.debug("weight info: {}", info);
             } else if (text.contains("소비기한")) {
-                detailVo.setProductExpirationDate(info.toString());
-                log.debug("expirationDate info: {}", info.toString());
+                detailVo.setProductExpirationDate(String.valueOf(info));
+                log.debug("expirationDate info: {}", info);
             } else if (text.contains("안내사항")) {
-                detailVo.setProductNotification(info.toString());
-                log.debug("noti info: {}", info.toString());
+                detailVo.setProductNotification(String.valueOf(info));
+                log.debug("noti info: {}", info);
             } else if (text.contains("알레르기")) {
-                detailVo.setProductAllergyInfo(info.toString());
-                log.debug("allergy info: {}", info.toString());
+                detailVo.setProductAllergyInfo(String.valueOf(info));
+                log.debug("allergy info: {}", info);
             } else {
                 log.warn("getDetailInfo WARN:: Undefined field");
             }
@@ -170,7 +169,7 @@ public class CrawlService {
             if (rowsInserted > 0) {
                 ResultSet generatedKeys = productStatement.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    Long productId = generatedKeys.getLong(1);
+                    long productId = generatedKeys.getLong(1);
 
                     // PRODUCT_DETAIL 테이블 데이터 저장
                     String productDetailSql = "INSERT INTO product_detail (PRODUCT_ID, PRODUCT_SELLER, PRODUCT_PACKAGE_TYPE, " +
@@ -208,7 +207,7 @@ public class CrawlService {
 
     private List<String> getCategory(String baseUrl, int num) {
         List<String> result = new ArrayList<>();
-        String categoryUrl = "";
+        String categoryUrl;
 
         if (num >= 1 && num <= 8) {
             String categoryCode = "90700" + num;
