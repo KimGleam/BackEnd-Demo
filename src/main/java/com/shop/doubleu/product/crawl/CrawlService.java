@@ -31,7 +31,7 @@ public class CrawlService {
 
         for (int i = 1; i < 47; i++) {
             List<String> result = getCategory(baseUrl, i);
-            String category = result.get(0);
+            String categoryCd = result.get(0);
             String targetUrl = result.get(1);
             if (targetUrl.isEmpty()) {
                 log.warn("Skip targetUrl: {}", targetUrl);
@@ -51,7 +51,7 @@ public class CrawlService {
                     WebDriverUtil.pageLoad();
 
                     // 상품 정보 추출
-                    ProductVO detailVo = getDetailInfo(driver, category);
+                    ProductVO detailVo = getDetailInfo(driver, categoryCd);
                     // 상품 정보 DB 저장
                     insertData(detailVo);
 
@@ -63,7 +63,7 @@ public class CrawlService {
                 failCnt++;
                 log.error(e.getMessage());
             }
-            log.info("Category Execution END:: Category: {}, SuccessCnt: {}, FailedCnt: {}", category, successCnt, failCnt);
+            log.info("Category Execution END:: Category: {}, SuccessCnt: {}, FailedCnt: {}", categoryCd, successCnt, failCnt);
         }
         WebDriverUtil.quit(driver);
         log.info("Crawling Execution END:: SuccessCnt: {}, FailedCnt: {}", successCnt, failCnt);
@@ -142,7 +142,7 @@ public class CrawlService {
                 detailVo.setProductAllergyInfo(String.valueOf(info));
                 log.debug("allergy info: {}", info);
             } else {
-                log.warn("getDetailInfo WARN:: Undefined field");
+                log.warn("getDetailInfo WARN:: Undefined field: {}, element:{}", text, dtElement);
             }
         }
 
@@ -150,7 +150,11 @@ public class CrawlService {
     }
 
     public void insertData(ProductVO detailVo) {
-        try (Connection connection = DriverManager.getConnection(dataSourceProperties.getUrl(), dataSourceProperties.getUsername(), dataSourceProperties.getPassword())) {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(dataSourceProperties.getUrl(), dataSourceProperties.getUsername(), dataSourceProperties.getPassword());
+            connection.setAutoCommit(false);
+
             // PRODUCT 테이블 데이터 저장
             String productSql = "INSERT INTO product (PRODUCT_NAME, PRODUCT_SUBNAME, CATEGORY_CODE, PRODUCT_IMAGE, REGISTRATION_DATE, PRODUCT_REGULAR_PRICE, PRODUCT_DISCOUNT_PRICE, PRODUCT_DISCOUNT_RATE) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -191,17 +195,37 @@ public class CrawlService {
                     int detailRowsInserted = detailStatement.executeUpdate();
                     if (detailRowsInserted > 0) {
                         log.info("insertData INFO:: Data inserted successfully into both product and 'product_detail' tables.");
+                        connection.commit();
                     } else {
                         log.error("insertData ERROR:: Failed to insert data into 'product_detail' table.");
+                        connection.rollback();  // 트랜젹션 롧백
                     }
                 } else {
                     log.error("insertData ERROR:: Failed to retrieve generated keys for PRODUCT_ID.");
+                    connection.rollback();
                 }
             } else {
                 log.error("insertData ERROR:: Failed to insert data into 'product' table. ");
+                connection.rollback();
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             log.error("insertData ERROR:: " + e.getMessage());
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            } catch (SQLException ex) {
+                log.error("insertData ERROR:: Rollback failed: " + ex.getMessage());
+            }
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                log.error("insertData ERROR:: Failed to close connection: " + e.getMessage());
+            }
         }
     }
 
