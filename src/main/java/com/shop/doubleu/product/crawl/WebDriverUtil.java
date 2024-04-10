@@ -1,17 +1,16 @@
-package com.shop.doubleu.product.dummy.crawling;
+package com.shop.doubleu.product.crawl;
 
 import java.time.Duration;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.Sleeper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.springframework.util.ObjectUtils;
 
 public class WebDriverUtil {
-    private static String WEB_DRIVER_PATH = "C:\\Users\\kwin\\IdeaProjects\\BackEnd-Demo\\src\\main\\resources\\chromedriver.exe"; // WebDriver 경로
+    private static final String WEB_DRIVER_PATH = getProjectRootPath()+"/src/main/resources/driver/chromedriver.exe"; // WebDriver 경로
 
     public static WebDriver getChromeDriver() {
         if (ObjectUtils.isEmpty(System.getProperty("webdriver.chrome.driver"))) {
@@ -19,7 +18,7 @@ public class WebDriverUtil {
         }
         /// Chrome 옵션 세팅
         ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--headless"); // 브라우저 숨김
+        options.addArguments("--headless"); // 브라우저 숨김
         options.addArguments("--remote-allow-origins=*");
         // Driver 생성
         WebDriver driver = new ChromeDriver(options);
@@ -53,5 +52,10 @@ public class WebDriverUtil {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String getProjectRootPath() {
+        Path currentRelativePath = Paths.get("");
+        return currentRelativePath.toAbsolutePath().toString();
     }
 }

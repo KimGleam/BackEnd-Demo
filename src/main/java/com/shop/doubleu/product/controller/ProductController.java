@@ -1,13 +1,11 @@
 package com.shop.doubleu.product.controller;
 
-import java.util.List;
-
+import com.shop.doubleu.product.crawl.CrawlService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.shop.doubleu.product.entity.Product;
 import com.shop.doubleu.product.service.ProductService;
 import com.shop.global.support.SuccessResponse;
 
@@ -51,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductController {
 
 	private final ProductService productService;
+	private final CrawlService crawlService;
 
 	/**
 	 *
@@ -60,6 +59,13 @@ public class ProductController {
 	@GetMapping("/list")
 	public SuccessResponse getProductList(@RequestHeader String productId){
 		return new SuccessResponse(productService.getProductList(productId));
+	}
+
+	@Operation(summary = "샘플 상품", description = "크롤링")
+	@RequestMapping("/crawl")
+	public SuccessResponse productListCrawl() {
+		crawlService.start();
+		return new SuccessResponse();
 	}
 
 }

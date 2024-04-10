@@ -1,4 +1,4 @@
-package com.shop.doubleu.product.dummy.crawling;
+package com.shop.doubleu.product.crawl;
 
 import lombok.Data;
 

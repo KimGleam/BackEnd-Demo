@@ -1,9 +1,10 @@
-package com.shop.doubleu.product.dummy.crawling;
+package com.shop.doubleu.product.crawl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.springframework.stereotype.Service;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -11,34 +12,37 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Service
 @Slf4j
-public class Crawling {
-    final String URL = "jdbc:mysql://localhost:3306/doubleu";
-    final String USERNAME = "root";
-    final String PASSWORD = "root99";
-    int successCnt = 0;
-    int failCnt = 0;
-    private final WebDriver driver;
+public class CrawlService {
+    private final DataSourceProperties dataSourceProperties;
 
-    public Crawling() {
-        this.driver = WebDriverUtil.getChromeDriver();
+    public CrawlService(DataSourceProperties dataSourceProperties) {
+        this.dataSourceProperties = dataSourceProperties;
     }
 
     public void start() {
-        log.info("Crawling Execution START:: {}", new Date());
+        WebDriver driver = WebDriverUtil.getChromeDriver();
+        int successCnt = 0;
+        int failCnt = 0;
         String baseUrl = "https://www.kurly.com/categories/";
 
-        for (int i = 1; i < 47; i++) {
-            try {
-                List<String> result  = getCategory(baseUrl, i);
-                String category = result.get(0);
-                String targetUrl = result.get(1);
-                if (targetUrl.isEmpty()) {
-                    continue;
-                }
+        log.info("Crawling Execution START:: {}", new Date());
 
+        for (int i = 1; i < 47; i++) {
+            List<String> result = getCategory(baseUrl, i);
+            String category = result.get(0);
+            String targetUrl = result.get(1);
+            if (targetUrl.isEmpty()) {
+                log.warn("Skip targetUrl: {}", targetUrl);
+                continue;
+            }
+
+            try {
                 log.info("targetUrl: {}", targetUrl);
                 driver.get(targetUrl);
+                WebDriverUtil.pageLoad();
+
                 List<WebElement> childElements = driver.findElements(By.cssSelector("#container > div > div.css-1d3w5wq.ef36txc6 > div.css-11kh0cw.ef36txc5 > a"));
 
                 for (int j = 1; j <= childElements.size(); j++) {
@@ -46,21 +50,23 @@ public class Crawling {
                     element.click();
                     WebDriverUtil.pageLoad();
 
+                    // 상품 정보 추출
                     ProductVO detailVo = getDetailInfo(driver, category);
+                    // 상품 정보 DB 저장
                     insertData(detailVo);
 
-                    // 이전 페이지로 다시 이동
                     successCnt++;
+                    // 이전 페이지로 다시 이동
                     driver.navigate().back();
                 }
-                WebDriverUtil.pageLoad();
             } catch (Exception e) {
                 failCnt++;
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
+            log.info("Category Execution END:: Category: {}, SuccessCnt: {}, FailedCnt: {}", category, successCnt, failCnt);
         }
         WebDriverUtil.quit(driver);
-        log.info("Crawling Execution END:: {}, SuccessCnt: {}, FailedCnt: {}", new Date(), successCnt, failCnt);
+        log.info("Crawling Execution END:: SuccessCnt: {}, FailedCnt: {}", successCnt, failCnt);
     }
 
     public ProductVO getDetailInfo(WebDriver driver, String category) {
@@ -81,8 +87,7 @@ public class Crawling {
             WebElement regularPriceElement = priceElement.findElement(By.cssSelector("span.css-9pf1ze.e1q8tigr2"));
             int regularPrice = Integer.parseInt(regularPriceElement.getText().replaceAll("[,원]", ""));
             detailVo.setRegularPrice(regularPrice);
-
-            if (cssSelector.contains("span.css-5nirzt.e1q8tigr3")) {
+            if (cssSelector.contains("e1q8tigr3")) {
                 WebElement discountRateElement = priceElement.findElement(By.cssSelector("span.css-5nirzt.e1q8tigr3"));
                 int discountRate = Integer.parseInt(discountRateElement.getText().replace("%", ""));
                 int discountPrice = (int) (regularPrice * (1 - discountRate / 100.0)); // 할인된 가격 계산
@@ -101,34 +106,42 @@ public class Crawling {
         // 상품 정보 추출
         List<WebElement> childElements = driver.findElements(By.cssSelector("#product-atf > section > ul > li"));
         for (int i = 0; i < childElements.size(); i++) {
-            WebElement dtElement = childElements.get(i).findElement(By.cssSelector("li:nth-child(" + (i+1) + ") > dt"));
-            WebElement ddElement = childElements.get(i).findElement(By.cssSelector("li:nth-child(" + (i+1) + ") > dd > p"));
+            WebElement dtElement = childElements.get(i).findElement(By.cssSelector("li:nth-child(" + (i + 1) + ") > dt"));
+            WebElement ddElement = childElements.get(i).findElement(By.cssSelector("li:nth-child(" + (i + 1) + ") > dd"));
             String text = dtElement.getText();
+            StringBuilder info = new StringBuilder();
+
+            List<WebElement> pElements = ddElement.findElements(By.tagName("p"));
+            for (int j = 0; j < pElements.size(); j++) {
+                WebElement pElement = pElements.get(j);
+                info.append(pElement.getText());
+                if (pElements.size() > 1 && j < pElements.size() - 1) info.append("\n");
+            }
 
             if (text.contains("배송")) {
-                log.info("delivery info: {}", ddElement.getText());
-                detailVo.setProductDeliveryInfo(ddElement.getText());
+                log.debug("delivery info: {}", info.toString());
+                detailVo.setProductDeliveryInfo(info.toString());
             } else if (text.contains("판매자")) {
-                log.info("seller info: {}", ddElement.getText());
-                detailVo.setProductSeller(ddElement.getText());
+                log.debug("seller info: {}", info.toString());
+                detailVo.setProductSeller(info.toString());
             } else if (text.contains("포장타입")) {
-                log.info("packageType info: {}", ddElement.getText());
-                detailVo.setProductPackageType(ddElement.getText());
+                log.debug("packageType info: {}", info.toString());
+                detailVo.setProductPackageType(info.toString());
             } else if (text.contains("판매단위")) {
-                detailVo.setSalesUnit(ddElement.getText());
-                log.info("salesUnit info: {}", ddElement.getText());
+                detailVo.setSalesUnit(info.toString());
+                log.debug("salesUnit info: {}", info.toString());
             } else if (text.contains("중량")) {
-                detailVo.setProductWeight(ddElement.getText());
-                log.info("weight info: {}", ddElement.getText());
+                detailVo.setProductWeight(info.toString());
+                log.debug("weight info: {}", info.toString());
             } else if (text.contains("소비기한")) {
-                detailVo.setProductExpirationDate(ddElement.getText());
-                log.info("expirationDate info: {}", ddElement.getText());
+                detailVo.setProductExpirationDate(info.toString());
+                log.debug("expirationDate info: {}", info.toString());
             } else if (text.contains("안내사항")) {
-                detailVo.setProductNotification(ddElement.getText());
-                log.info("noti info: {}", ddElement.getText());
+                detailVo.setProductNotification(info.toString());
+                log.debug("noti info: {}", info.toString());
             } else if (text.contains("알레르기")) {
-                detailVo.setProductAllergyInfo(ddElement.getText());
-                log.info("allergy info: {}", ddElement.getText());
+                detailVo.setProductAllergyInfo(info.toString());
+                log.debug("allergy info: {}", info.toString());
             } else {
                 log.warn("getDetailInfo WARN:: Undefined field");
             }
@@ -138,9 +151,9 @@ public class Crawling {
     }
 
     public void insertData(ProductVO detailVo) {
-        try (Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD)) {
-            // Insert into PRODUCT table
-            String productSql = "INSERT INTO PRODUCT (PRODUCT_NAME, PRODUCT_SUBNAME, CATEGORY_CODE, PRODUCT_IMAGE, REGISTRATION_DATE, PRODUCT_REGULAR_PRICE, PRODUCT_DISCOUNT_PRICE, PRODUCT_DISCOUNT_RATE) " +
+        try (Connection connection = DriverManager.getConnection(dataSourceProperties.getUrl(), dataSourceProperties.getUsername(), dataSourceProperties.getPassword())) {
+            // PRODUCT 테이블 데이터 저장
+            String productSql = "INSERT INTO product (PRODUCT_NAME, PRODUCT_SUBNAME, CATEGORY_CODE, PRODUCT_IMAGE, REGISTRATION_DATE, PRODUCT_REGULAR_PRICE, PRODUCT_DISCOUNT_PRICE, PRODUCT_DISCOUNT_RATE) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement productStatement = connection.prepareStatement(productSql, Statement.RETURN_GENERATED_KEYS);
             productStatement.setString(1, detailVo.getProductName());
@@ -159,11 +172,11 @@ public class Crawling {
                 if (generatedKeys.next()) {
                     Long productId = generatedKeys.getLong(1);
 
-                    // Insert into PRODUCT_DETAIL table
-                    String productDetailSql = "INSERT INTO PRODUCT_DETAIL (PRODUCT_ID, PRODUCT_SELLER, PRODUCT_PACKAGE_TYPE, " +
+                    // PRODUCT_DETAIL 테이블 데이터 저장
+                    String productDetailSql = "INSERT INTO product_detail (PRODUCT_ID, PRODUCT_SELLER, PRODUCT_PACKAGE_TYPE, " +
                             "PRODUCT_WEIGHT, PRODUCT_SALES_UNIT, PRODUCT_ALLERGY_INFO, PRODUCT_NOTIFICATION, " +
-                            "PRODUCT_EXPIRATION_DATE, PRODUCT_DETAIL) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            "PRODUCT_EXPIRATION_DATE, PRODUCT_DETAIL, PRODUCT_DELIVERY_INFO) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                     PreparedStatement detailStatement = connection.prepareStatement(productDetailSql);
                     detailStatement.setLong(1, productId);
                     detailStatement.setString(2, detailVo.getProductSeller());
@@ -174,20 +187,21 @@ public class Crawling {
                     detailStatement.setString(7, detailVo.getProductNotification());
                     detailStatement.setString(8, detailVo.getProductExpirationDate());
                     detailStatement.setString(9, detailVo.getProductDetail());
+                    detailStatement.setString(10, detailVo.getProductDeliveryInfo());
 
                     int detailRowsInserted = detailStatement.executeUpdate();
                     if (detailRowsInserted > 0) {
-                        log.info("insertData INFO:: Data inserted successfully into both PRODUCT and PRODUCT_DETAIL tables.");
+                        log.info("insertData INFO:: Data inserted successfully into both product and 'product_detail' tables.");
                     } else {
-                        log.info("insertData ERROR:: Failed to insert data into PRODUCT_DETAIL table.");
+                        log.error("insertData ERROR:: Failed to insert data into 'product_detail' table.");
                     }
                 } else {
-                    log.info("insertData ERROR:: Failed to retrieve generated keys for PRODUCT_ID.");
+                    log.error("insertData ERROR:: Failed to retrieve generated keys for PRODUCT_ID.");
                 }
             } else {
-                log.info("insertData ERROR:: Failed to insert data into PRODUCT table. ");
+                log.error("insertData ERROR:: Failed to insert data into 'product' table. ");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error("insertData ERROR:: " + e.getMessage());
         }
     }
@@ -233,10 +247,5 @@ public class Crawling {
         }
 
         return result;
-    }
-
-    public static void main(String[] args) {
-        Crawling crawling = new Crawling();
-        crawling.start();
     }
 }

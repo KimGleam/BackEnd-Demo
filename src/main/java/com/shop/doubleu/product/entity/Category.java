@@ -19,7 +19,7 @@ public class Category {
     @Column(name = "CATEGORY_NAME", nullable = false)
     private String categoryName;
 
-    @Column(name = "CATEGORY_PCODE")
+    @Column(name = "PCODE")
     private String pCode;
 
     @Builder
