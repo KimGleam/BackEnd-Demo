@@ -63,7 +63,8 @@ public class SecurityConfig {
 		"/api/token",
 		"/member/**",
 		"/order/**",
-		"/product/**"
+		"/product/**",
+		"/goods/**"
 	};
 
 	@Bean
