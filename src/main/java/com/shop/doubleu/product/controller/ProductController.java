@@ -1,10 +1,7 @@
 package com.shop.doubleu.product.controller;
 
 import com.shop.doubleu.product.service.CrawlService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.shop.doubleu.product.service.ProductService;
 import com.shop.global.support.SuccessResponse;
@@ -45,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/goods")
 public class ProductController {
 
 	private final ProductService productService;
@@ -61,7 +58,13 @@ public class ProductController {
 		return new SuccessResponse(productService.getProductList(productId));
 	}
 
-	@Operation(summary = "샘플 상품", description = "크롤링")
+	@Operation(summary = "상품 상세 정보", description = "상품 상세 정보 조회")
+	@GetMapping("/detail")
+	public SuccessResponse getProductList(@RequestParam long productDetailId) {
+		return new SuccessResponse(productService.getProductDetailInfo(productDetailId));
+	}
+
+	@Operation(summary = "샘플 상품", description = "상품 크롤링")
 	@RequestMapping("/crawl")
 	public SuccessResponse productListCrawl() {
 		crawlService.start();

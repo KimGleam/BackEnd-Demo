@@ -95,6 +95,8 @@ public class CrawlService {
         log.info("Category Execution END:: Category: {}, SuccessCnt: {}, FailedCnt: {}", categoryCd, successCnt, failCnt);
     }
 
+    // =================================================================================================================
+    // 상품 정보 추출 메서드
     /**
      * 상품 정보 추출
      * @param driver: 크롬 드라이버
@@ -108,15 +110,13 @@ public class CrawlService {
         // 상품 가격 추출
         getPriceInfo(driver, detailVo);
         // 사진 추출
-        getImagePath(driver, category, detailVo);
+        getImageInfo(driver, category, detailVo);
         // 상품 상세 정보 추출
         getProductDetailInfo(driver, detailVo);
 
         return detailVo;
     }
 
-    // =================================================================================================================
-    // 상품 정보 추출 메서드
     private static void getProductDetailInfo(WebDriver driver, ProductDTO detailVo) {
         List<WebElement> childElements = driver.findElements(By.cssSelector("#product-atf > section > ul > li"));
         for (WebElement element : childElements) {
@@ -136,45 +136,45 @@ public class CrawlService {
 
             switch (text) {
                 case "배송":
-                    log.debug("delivery info: {}", info);
+                    log.debug("배송 info: {}", info);
                     detailVo.setProductDeliveryInfo(info.toString());
                     break;
                 case "판매자":
-                    log.debug("seller info: {}", info);
+                    log.debug("판매자 info: {}", info);
                     detailVo.setProductSeller(info.toString());
                     break;
                 case "포장타입":
-                    log.debug("packageType info: {}", info);
+                    log.debug("포장타입 info: {}", info);
                     detailVo.setProductPackageType(info.toString());
                     break;
                 case "판매단위":
                     detailVo.setSalesUnit(info.toString());
-                    log.debug("salesUnit info: {}", info);
+                    log.debug("판매단위 info: {}", info);
                     break;
                 case "중량":
                     detailVo.setProductWeight(info.toString());
-                    log.debug("weight info: {}", info);
+                    log.debug("중량 info: {}", info);
                     break;
                 case "소비기한":
                     detailVo.setProductExpirationDate(info.toString());
-                    log.debug("expirationDate info: {}", info);
+                    log.debug("소비기한 info: {}", info);
                     break;
                 case "안내사항":
                     detailVo.setProductNotification(info.toString());
-                    log.debug("noti info: {}", info);
+                    log.debug("안내사항 info: {}", info);
                     break;
                 case "알레르기":
                     detailVo.setProductAllergyInfo(info.toString());
-                    log.debug("allergy info: {}", info);
+                    log.debug("알레르기 info: {}", info);
                     break;
-                default:
+                default:    // 새로운 필드 추가
                     log.warn("getDetailInfo WARN:: Undefined field: {}, element:{}", text, dtElement);
                     break;
             }
         }
     }
 
-    private static void getImagePath(WebDriver driver, String category, ProductDTO detailVo) {
+    private static void getImageInfo(WebDriver driver, String category, ProductDTO detailVo) {
         WebElement mainImgElement = driver.findElement(By.cssSelector("#product-atf > div > div > div > div > div > span > img"));
         WebElement detailElement = driver.findElement(By.cssSelector("#detail > div.css-kqvkc7.es6jciw1 > img"));
         detailVo.setProductImage(mainImgElement.getAttribute("src"));
@@ -208,8 +208,8 @@ public class CrawlService {
     // =================================================================================================================
 
     /**
-     * JPA 버전
-     * Description: product 테이블 insert 후 product_id를 product_detail 테이블에서 foreign key 로 활용
+     * 상품등록 JPA 버전
+     * : product 테이블 insert 후 product_id를 product_detail 테이블에서 foreign key 로 등록
      * @param detailVo: Product Info 객체
      */
     public void insertData(ProductDTO detailVo) {
@@ -250,7 +250,7 @@ public class CrawlService {
 
     /**
      * 상품 카테고리 URL 생성
-     * @param baseUrl: 컬리 기본 카테고리 url
+     * @param baseUrl: 컬리 기본 카테고리 URL
      * @param num: 카테고리 번호
      * @return 카테고리 번호 및 URL
      */
