@@ -21,7 +21,7 @@ public class ProductDetail {
     private Long productId;
 
     @Column(name = "PRODUCT_DELIVERY_INFO")
-    private String productDeilveryInfo;
+    private String productDeliveryInfo;
 
     @Column(name = "PRODUCT_SELLER")
     private String productSeller;
@@ -51,7 +51,7 @@ public class ProductDetail {
     public ProductDetail (Long id, Long productId, String productSeller,
                           String productPackageType, String productWeight, String productAllergyInfo,
                           String productNotification, String productExpirationDate, String productDetail,
-                          String  salesUnit) {
+                          String  salesUnit, String productDeliveryInfo) {
         this.id = id;
         this.productId = productId;
         this.productSeller = productSeller;
@@ -62,5 +62,6 @@ public class ProductDetail {
         this.productExpirationDate = productExpirationDate;
         this.productDetail = productDetail;
         this.salesUnit = salesUnit;
+        this.productDeliveryInfo = productDeliveryInfo;
     }
 }

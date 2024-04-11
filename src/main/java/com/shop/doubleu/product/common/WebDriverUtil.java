@@ -1,4 +1,4 @@
-package com.shop.doubleu.product.crawl;
+package com.shop.doubleu.product.common;
 
 import java.time.Duration;
 

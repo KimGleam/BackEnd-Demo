@@ -1,4 +1,4 @@
-package com.shop.doubleu.product.crawl;
+package com.shop.doubleu.product.common;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;

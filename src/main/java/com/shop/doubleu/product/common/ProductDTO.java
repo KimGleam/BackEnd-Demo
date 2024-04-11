@@ -1,9 +1,9 @@
-package com.shop.doubleu.product.crawl;
+package com.shop.doubleu.product.common;
 
 import lombok.Data;
 
 @Data
-public class ProductVO {
+public class ProductDTO {
     // PRODUCT
     private Long productId;
     private String productName;
