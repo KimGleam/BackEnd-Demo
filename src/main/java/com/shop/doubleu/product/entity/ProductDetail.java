@@ -20,48 +20,60 @@ public class ProductDetail {
     @Column(name = "PRODUCT_ID", nullable = false)
     private Long productId;
 
-    @Column(name = "PRODUCT_DELIVERY_INFO")
-    private String productDeliveryInfo;
+    @Column(name = "PRODUCT_DETAIL", nullable = false)
+    private String detailImage;
 
     @Column(name = "PRODUCT_SELLER")
-    private String productSeller;
+    private String seller;
 
     @Column(name = "PRODUCT_PACKAGE_TYPE")
-    private String productPackageType;
+    private String packageType;
 
     @Column(name = "PRODUCT_WEIGHT")
-    private String productWeight;
+    private String weight;
 
     @Column(name = "PRODUCT_SALES_UNIT")
     private String salesUnit;
 
     @Column(name = "PRODUCT_ALLERGY_INFO")
-    private String productAllergyInfo;
+    private String allergyInfo;
+
+    @Column(name = "PRODUCT_DELIVERY_INFO")
+    private String deliveryInfo;
+
+    @Column(name = "PRODUCT_LIVESTOCK_HISTORY_INFO")
+    private String livestockHistoryInfo;
 
     @Column(name = "PRODUCT_NOTIFICATION")
-    private String productNotification;
+    private String notification;
+
+    @Column(name = "PRODUCT_CAREFUL_INFO")
+    private String carefulInfo;
 
     @Column(name = "PRODUCT_EXPIRATION_DATE")
-    private String productExpirationDate;
+    private String expirationDate;
 
-    @Column(name = "PRODUCT_DETAIL", nullable = false)
-    private String productDetail;
+    @OneToOne
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private Product product;
 
     @Builder
-    public ProductDetail (Long id, Long productId, String productSeller,
-                          String productPackageType, String productWeight, String productAllergyInfo,
-                          String productNotification, String productExpirationDate, String productDetail,
-                          String  salesUnit, String productDeliveryInfo) {
+    public ProductDetail (Long id, Long productId, String seller,
+                          String packageType, String weight, String allergyInfo,
+                          String notification, String expirationDate, String detailImage,
+                          String  salesUnit, String deliveryInfo, String livestockHistoryInfo, String carefulInfo) {
         this.id = id;
         this.productId = productId;
-        this.productSeller = productSeller;
-        this.productPackageType = productPackageType;
-        this.productWeight = productWeight;
-        this.productAllergyInfo = productAllergyInfo;
-        this.productNotification = productNotification;
-        this.productExpirationDate = productExpirationDate;
-        this.productDetail = productDetail;
+        this.detailImage = detailImage;
+        this.seller = seller;
+        this.packageType = packageType;
+        this.weight = weight;
         this.salesUnit = salesUnit;
-        this.productDeliveryInfo = productDeliveryInfo;
+        this.allergyInfo = allergyInfo;
+        this.deliveryInfo = deliveryInfo;
+        this.livestockHistoryInfo = livestockHistoryInfo;
+        this.notification = notification;
+        this.carefulInfo = carefulInfo;
+        this.expirationDate = expirationDate;
     }
 }

@@ -1,7 +1,7 @@
 package com.shop.doubleu.product.service;
 
 import com.shop.doubleu.product.common.DataSourceProperties;
-import com.shop.doubleu.product.common.ProductDTO;
+import com.shop.doubleu.product.dto.ProductDTO;
 import com.shop.doubleu.product.common.WebDriverUtil;
 import com.shop.doubleu.product.entity.Product;
 import com.shop.doubleu.product.entity.ProductDetail;
@@ -119,6 +119,7 @@ public class CrawlService {
 
     private static void getProductDetailInfo(WebDriver driver, ProductDTO detailVo) {
         List<WebElement> childElements = driver.findElements(By.cssSelector("#product-atf > section > ul > li"));
+
         for (WebElement element : childElements) {
             WebElement dtElement = element.findElement(By.tagName("dt"));
             WebElement ddElement = element.findElement(By.tagName("dd"));
@@ -136,36 +137,44 @@ public class CrawlService {
 
             switch (text) {
                 case "배송":
-                    log.debug("배송 info: {}", info);
-                    detailVo.setProductDeliveryInfo(info.toString());
+                    log.debug("배송: {}", info);
+                    detailVo.setDeliveryInfo(info.toString());
                     break;
                 case "판매자":
-                    log.debug("판매자 info: {}", info);
-                    detailVo.setProductSeller(info.toString());
+                    log.debug("판매자: {}", info);
+                    detailVo.setSeller(info.toString());
                     break;
                 case "포장타입":
-                    log.debug("포장타입 info: {}", info);
-                    detailVo.setProductPackageType(info.toString());
+                    log.debug("포장타입: {}", info);
+                    detailVo.setPackageType(info.toString());
                     break;
                 case "판매단위":
                     detailVo.setSalesUnit(info.toString());
-                    log.debug("판매단위 info: {}", info);
+                    log.debug("판매단위: {}", info);
                     break;
-                case "중량":
-                    detailVo.setProductWeight(info.toString());
-                    log.debug("중량 info: {}", info);
+                case "중량/용량":
+                    detailVo.setWeight(info.toString());
+                    log.debug("중량/용량: {}", info);
                     break;
-                case "소비기한":
-                    detailVo.setProductExpirationDate(info.toString());
-                    log.debug("소비기한 info: {}", info);
+                case "소비기한(또는 유통기한)정보":
+                    detailVo.setExpirationDate(info.toString());
+                    log.debug("소비기한(또는 유통기한)정보: {}", info);
+                    break;
+                case "유의사항":
+                    detailVo.setCarefulInfo(info.toString());
+                    log.debug("유의사항: {}", info);
                     break;
                 case "안내사항":
-                    detailVo.setProductNotification(info.toString());
-                    log.debug("안내사항 info: {}", info);
+                    detailVo.setNotification(info.toString());
+                    log.debug("안내사항: {}", info);
                     break;
-                case "알레르기":
-                    detailVo.setProductAllergyInfo(info.toString());
-                    log.debug("알레르기 info: {}", info);
+                case "알레르기정보":
+                    detailVo.setAllergyInfo(info.toString());
+                    log.debug("알레르기정보: {}", info);
+                    break;
+                case "축산물 이력정보":
+                    detailVo.setLivestockHistoryInfo(info.toString());
+                    log.debug("축산물 이력정보: {}", info);
                     break;
                 default:    // 새로운 필드 추가
                     log.warn("getDetailInfo WARN:: Undefined field: {}, element:{}", text, dtElement);
@@ -178,7 +187,7 @@ public class CrawlService {
         WebElement mainImgElement = driver.findElement(By.cssSelector("#product-atf > div > div > div > div > div > span > img"));
         WebElement detailElement = driver.findElement(By.cssSelector("#detail > div.css-kqvkc7.es6jciw1 > img"));
         detailVo.setProductImage(mainImgElement.getAttribute("src"));
-        detailVo.setProductDetail(detailElement.getAttribute("src"));
+        detailVo.setDetailImage(detailElement.getAttribute("src"));
         detailVo.setCategoryCode(category);
     }
 
@@ -229,15 +238,17 @@ public class CrawlService {
 
             ProductDetail productDetail = ProductDetail.builder()
                     .productId(product.getId()) // Foreign Key
-                    .productSeller(detailVo.getProductSeller())
-                    .productPackageType(detailVo.getProductPackageType())
-                    .productWeight(detailVo.getProductWeight())
+                    .detailImage(detailVo.getDetailImage())
+                    .seller(detailVo.getSeller())
+                    .packageType(detailVo.getPackageType())
+                    .weight(detailVo.getWeight())
                     .salesUnit(detailVo.getSalesUnit())
-                    .productAllergyInfo(detailVo.getProductAllergyInfo())
-                    .productNotification(detailVo.getProductNotification())
-                    .productExpirationDate(detailVo.getProductExpirationDate())
-                    .productDetail(detailVo.getProductDetail())
-                    .productDeliveryInfo(detailVo.getProductDeliveryInfo())
+                    .allergyInfo(detailVo.getAllergyInfo())
+                    .deliveryInfo(detailVo.getDeliveryInfo())
+                    .livestockHistoryInfo(detailVo.getLivestockHistoryInfo())
+                    .notification(detailVo.getNotification())
+                    .carefulInfo(detailVo.getCarefulInfo())
+                    .expirationDate(detailVo.getExpirationDate())
                     .build();
             productDetailRepository.save(productDetail);
 

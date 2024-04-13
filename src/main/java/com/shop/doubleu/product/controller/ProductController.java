@@ -54,14 +54,21 @@ public class ProductController {
 	 */
 	@Operation(summary = "상품 목록", description = "상품 목록 조회")
 	@GetMapping("/list")
-	public SuccessResponse getProductList(@RequestHeader String productId){
+	public SuccessResponse getProductList(@RequestHeader String productId) {
 		return new SuccessResponse(productService.getProductList(productId));
 	}
 
+//	@Operation(summary = "상품 상세 정보", description = "상품 상세 정보 조회")
+//	@GetMapping("/detail")
+//	public SuccessResponse getProductInfo(@RequestParam long productId) {
+//		productService.getProductInfo(productId);
+//		return new SuccessResponse(productService.getProductDetailInfo(productId));
+//	}
+
 	@Operation(summary = "상품 상세 정보", description = "상품 상세 정보 조회")
 	@GetMapping("/detail")
-	public SuccessResponse getProductList(@RequestParam long productDetailId) {
-		return new SuccessResponse(productService.getProductDetailInfo(productDetailId));
+	public SuccessResponse getProductsWithDetails(@RequestParam long productId) {
+		return new SuccessResponse(productService.getProductWithDetailById(productId));
 	}
 
 	@Operation(summary = "샘플 상품", description = "상품 크롤링")
