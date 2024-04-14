@@ -167,7 +167,12 @@ public class CrawlScanner {
                     detailVo.setAllergyInfo(info.toString());
                     log.debug("알레르기정보: {}", info);
                     break;
+                case "축산물이력정보":
                 case "축산물 이력정보":
+                    detailVo.setLivestockHistoryInfo(info.toString());
+                    log.debug("축산물 이력정보: {}", info);
+                    break;
+                case "무항생제 인증번호":
                     detailVo.setLivestockHistoryInfo(info.toString());
                     log.debug("축산물 이력정보: {}", info);
                     break;

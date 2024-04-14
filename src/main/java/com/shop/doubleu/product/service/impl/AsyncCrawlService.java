@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service("asyncCrawlService")
 @RequiredArgsConstructor
@@ -27,46 +28,56 @@ public class AsyncCrawlService implements CrawlService {
     @Override
     public void execute() {
         BlockingQueue<List<ProductDTO>> queue = new LinkedBlockingQueue<>(); // BlockingQueue 초기화
-        ExecutorService executorService = Executors.newFixedThreadPool(20); // 고정된 작업자 스레드 수
-        List<CompletableFuture<Void>> futures = new ArrayList<>(); // 비동기 작업 실행 객체
+        ExecutorService executorService = Executors.newFixedThreadPool(20 ); // 고정된 작업자 스레드 수
+        List<CompletableFuture<Void>> crawlingFutures = new ArrayList<>(); // 크롤링 작업 실행 객체
+        AtomicBoolean scannersCompleted = new AtomicBoolean(false);
 
-        // 크롤링 작업과 데이터 삽입 작업을 동시에 실행
+        // 크롤링 작업
         for (int i = 1; i < 47; i++) {
             int TASK = i; // 카테고리 고유 번호
-
-            // 크롤링 작업
             CompletableFuture<Void> crawlingFuture = CompletableFuture.runAsync(() -> {
                 try {
-                    new CrawlScanner(queue, TASK).crawlCategoryAsync().join(); // 크롤링 작업 시작
+                    new CrawlScanner(queue, TASK).crawlCategoryAsync(); // 크롤링 작업 시작
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-            }, executorService);
-            futures.add(crawlingFuture); // 크롤링 작업 목록에 추가
-
-            // 데이터 삽입 작업
-            CompletableFuture<Void> insertionFuture = CompletableFuture.runAsync(() -> {
-                try {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        List<ProductDTO> productList = queue.take(); // 큐에 데이터가 있으면 가져옴
-                        if (!productList.isEmpty()) {
-                            new CrawlWorker(queue, TASK, productRepository, productDetailRepository).insertData(productList); // 데이터 삽입 작업 시작
-                        } else {
-                            log.warn("Queue 대기열이 비어있습니다.");
-                           return;
-                        }
+                } finally {
+                    // 크롤링 작업 완료 플래그
+                    if (TASK == 46) {
+                        scannersCompleted.set(true);
                     }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
                 }
             }, executorService);
-            futures.add(insertionFuture); // 데이터 삽입 작업 목록에 추가
+            crawlingFutures.add(crawlingFuture); // 크롤링 작업 목록에 추가
         }
 
-        // 모든 작업이 완료될 때까지 대기
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        // 데이터 삽입 작업
+        CompletableFuture<Void> insertionFuture = CompletableFuture.runAsync(() -> {
+            int TASK = 1;
+            try {
+                while (!Thread.currentThread().isInterrupted() && (!scannersCompleted.get() || !queue.isEmpty())) {
+                    TASK++;
+                    List<ProductDTO> productList = queue.poll(1, TimeUnit.SECONDS); // 1초 대기
+                    if (productList != null && !productList.isEmpty()) {
+                        new CrawlWorker(queue, TASK, productRepository, productDetailRepository).insertData(productList); // 데이터 삽입 작업 시작
+                    } else {
+                        if (scannersCompleted.get()) {
+                            log.warn("모든 크롤링 작업이 완료되었으며 대기열이 비어 있습니다.");
+                            return;
+                        }
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }, executorService);
+
+        // 모든 크롤링 작업 및 데이터 삽입 작업이 완료될 때까지 대기
+        CompletableFuture<Void> allCrawlingFutures = CompletableFuture.allOf(crawlingFutures.toArray(new CompletableFuture[0]));
+        allCrawlingFutures.join();
+        insertionFuture.join();
+
         // ExecutorService 종료
-        executorService.shutdown();
+        executorService.shutdownNow();
         log.info("### All crawling tasks are complete! Bye.");
     }
 

@@ -22,6 +22,7 @@ public class ProductDTO {
     private String allergyInfo;
     private String deliveryInfo;
     private String livestockHistoryInfo;
+    private String noAntibioticsCertificationNumber;
     private String stockingInfo;
     private String afterServiceInfo;
     private String sugarContent;
