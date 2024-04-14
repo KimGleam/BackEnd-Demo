@@ -62,6 +62,10 @@ public class ProductService {
                         productDetail.allergyInfo,
                         productDetail.deliveryInfo,
                         productDetail.livestockHistoryInfo,
+                        productDetail.stockingInfo,
+                        productDetail.afterServiceInfo,
+                        productDetail.sugarContent,
+                        productDetail.detailImage,
                         productDetail.notification,
                         productDetail.carefulInfo,
                         productDetail.expirationDate

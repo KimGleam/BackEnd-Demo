@@ -1,6 +1,8 @@
 package com.shop.doubleu.product.controller;
 
+import com.shop.doubleu.product.service.impl.AsyncCrawlService;
 import com.shop.doubleu.product.service.CrawlService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import com.shop.doubleu.product.service.ProductService;
@@ -46,7 +48,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductController {
 
 	private final ProductService productService;
-	private final CrawlService crawlService;
+
+	@Qualifier("asyncCrawlService")
+	private final CrawlService asyncCrawlService;
 
 	/**
 	 *
@@ -74,7 +78,7 @@ public class ProductController {
 	@Operation(summary = "샘플 상품", description = "상품 크롤링")
 	@RequestMapping("/crawl")
 	public SuccessResponse productListCrawl() {
-		crawlService.start();
+		asyncCrawlService.execute();
 		return new SuccessResponse();
 	}
 

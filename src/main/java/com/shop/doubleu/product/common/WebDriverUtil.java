@@ -19,6 +19,7 @@ public class WebDriverUtil {
         /// Chrome 옵션 세팅
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless"); // 브라우저 숨김
+        options.addArguments("--log-level=3"); // 로그 레벨
         options.addArguments("--remote-allow-origins=*");
         // Driver 생성
         WebDriver driver = new ChromeDriver(options);
