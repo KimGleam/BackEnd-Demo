@@ -198,7 +198,8 @@ public class CrawlScanner {
     private static void getImageInfo(WebDriver driver, String category, ProductDTO detailVo) {
         WebElement mainImgElement = driver.findElement(By.cssSelector("#product-atf > div > div > div > div > div > span > img"));
         detailVo.setProductImage(mainImgElement.getAttribute("src"));
-        List<WebElement> detailElements = driver.findElements(By.cssSelector("#detail > div.css-kqvkc7.es6jciw1 > img"));
+//        List<WebElement> detailElements = driver.findElements(By.cssSelector("#detail > div.css-kqvkc7.es6jciw1 > img"));
+        List<WebElement> detailElements = driver.findElements(By.cssSelector("#detail > div.css-kqvkc7.es6jciw1"));
         if (!detailElements.isEmpty()) {
             WebElement detailElement = detailElements.get(0);
             detailVo.setDetailImage(detailElement.getAttribute("src"));

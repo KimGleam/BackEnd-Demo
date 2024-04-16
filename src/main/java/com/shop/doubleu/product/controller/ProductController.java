@@ -1,7 +1,11 @@
 package com.shop.doubleu.product.controller;
 
+import com.shop.doubleu.product.dto.CategoryDTO;
+import com.shop.doubleu.product.entity.Category;
+import com.shop.doubleu.product.service.CategoryService;
 import com.shop.doubleu.product.service.impl.AsyncCrawlService;
 import com.shop.doubleu.product.service.CrawlService;
+import jdk.jfr.Description;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +18,9 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * com.shop.doubleu.product.controller.ProductController
@@ -51,7 +58,7 @@ public class ProductController {
 
 	@Qualifier("asyncCrawlService")
 	private final CrawlService asyncCrawlService;
-
+	private final CategoryService categoryService;
 	/**
 	 *
 	 * @return
@@ -61,13 +68,17 @@ public class ProductController {
 	public SuccessResponse getProductList(@RequestHeader String productId) {
 		return new SuccessResponse(productService.getProductList(productId));
 	}
+	@RequestMapping("/getAllCategoryList")
+	@Description("전체 상품 카테고리 목록")
+	public SuccessResponse getAllCategoryList() {
+		return new SuccessResponse(categoryService.getAllCategoryList());
+	}
 
-//	@Operation(summary = "상품 상세 정보", description = "상품 상세 정보 조회")
-//	@GetMapping("/detail")
-//	public SuccessResponse getProductInfo(@RequestParam long productId) {
-//		productService.getProductInfo(productId);
-//		return new SuccessResponse(productService.getProductDetailInfo(productId));
-//	}
+	@RequestMapping("/getParentCategoryList")
+	@Description("하위 상품 카테고리 목록")
+	public SuccessResponse getParentCategoryList(@RequestParam String pCode) {
+		return new SuccessResponse(categoryService.getParentCategoryList(pCode));
+	}
 
 	@Operation(summary = "상품 상세 정보", description = "상품 상세 정보 조회")
 	@GetMapping("/detail")
